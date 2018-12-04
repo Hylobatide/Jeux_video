@@ -37,6 +37,13 @@ static void create_menu(ig::IGUIEnvironment *gui)
   submenu->addItem(L"About...", MENU_ABOUT);
 }
 
+static void create_window(ig::IGUIEnvironment *gui)
+{
+  // La fenêtre
+  ig::IGUIWindow *window = gui->addWindow(ic::rect<s32>(420,25, 620,460), false, L"First Menu");
+  gui->addButton(ic::rect<s32>(40,74, 140,92), window, MENU_NEW_GAME, L"Start!");
+}
+
 int main()
 {
 
@@ -51,6 +58,7 @@ int main()
   iv::IVideoDriver  *driver = device->getVideoDriver();
   is::ISceneManager *smgr = device->getSceneManager();
   ig::IGUIEnvironment *gui = device->getGUIEnvironment();
+  device->setWindowCaption(L"Jeu");
 // Ajout de l’archive qui contient entre autres un niveau complet
   device->getFileSystem()->addFileArchive("data/ikzdm1.pk3");
 //Onchargeunbsp(unniveau)enparticulier:
@@ -77,7 +85,7 @@ int main()
   receiver.set_node(node);
   receiver.set_textures(textures);
 
-  scene::ICameraSceneNode *camera = smgr->addCameraSceneNodeFPS ();
+  scene::ICameraSceneNode *camera = smgr->addCameraSceneNodeFPS();
 
   // Création du triangle selector
   scene::ITriangleSelector *selector;
@@ -86,7 +94,7 @@ int main()
   scene::ISceneNodeAnimator *anim;
   anim = smgr->createCollisionResponseAnimator(selector, 
                                                node,  // Le noeud que l'on veut gérer
-                                               ic::vector3df(10, 20, 10), // "rayons" de la caméra
+                                               ic::vector3df(5, 5, 5), // "rayons" de la caméra
                                                ic::vector3df(0, -10, 0),  // gravité
                                                ic::vector3df(0, 30, 0));  // décalage du centre
   //camera->addAnimator(anim);
@@ -103,21 +111,26 @@ int main()
 // La barre de menu
 
   create_menu(gui);
+  // create_window(gui);
 
 
 
   while(device->run())
   {
     driver->beginScene(true, true, iv::SColor(100,150,200,255));
+gui->drawAll();
+
 
     // Dessin de la scène :
 
-    smgr->drawAll();
+    if(receiver.game_on){
+      smgr->drawAll();
+    }
+    
 
     // Dessin de l'interface
-    
-    gui->drawAll();
     driver->endScene();
+
   }
   device->drop();
 

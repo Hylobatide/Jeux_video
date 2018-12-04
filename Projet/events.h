@@ -27,7 +27,6 @@ public:
   void set_gui(irr::gui::IGUIEnvironment *gui);
   void set_node(irr::scene::ISceneNode *node);
   void set_textures(const std::vector<irr::video::ITexture *> &tex){textures=tex;}
-  bool set_game_on(bool i);
 };
 
 #endif   

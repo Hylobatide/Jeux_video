@@ -84,10 +84,6 @@ bool EventReceiver::mouse_handler(const SEvent &event)
       node->setRotation(rotation);
     }
     break;
-    case EMIE_MOUSE_WHEEL:
-    current_texture = (current_texture + 1) % textures.size();
-    node->setMaterialTexture(0, textures[current_texture]);
-    break;
     default:
     ;
   }
@@ -114,9 +110,10 @@ bool EventReceiver::gui_handler(const SEvent &event)
       switch(id)
       {
         case MENU_NEW_GAME:
-        gui->addMessageBox(L"Boite About", L"Texte présentant ce super jeu\nd'un intérêt incroyable");
-        set_game_on(game_on);
+        game_on=true;
+        printf("%i\n", game_on);
         break;
+
         case MENU_QUIT:
         exit(0);
 
@@ -145,87 +142,19 @@ bool EventReceiver::gui_handler(const SEvent &event)
       }
     }
     break;
-      // gestion des boites d'édition de texte
-    case ig::EGET_EDITBOX_CHANGED:
-    {
-      s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_VALUE)
-      {
-        ic::stringc s = event.GUIEvent.Caller->getText();
-        std::cout << "editbox changed:" << s.c_str() << std::endl;
-      }
-    }
-    break;
       // gestion des boutons
     case ig::EGET_BUTTON_CLICKED:
     {
       s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_BUTTON)
+      if (id == MENU_NEW_GAME)
+      {
         std::cout << "Button clicked\n";
-    }
-    break;
-      // gestion des cases à cocher
-    case ig::EGET_CHECKBOX_CHANGED:
-    {
-      s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_CHECK_BOX)
-      {
-        std::cout << "Check box clicked: ";
-        bool checked = ((ig::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
-        if (!checked) std::cout << "un";
-        std::cout << "checked\n";
+        game_on=true;
+
       }
     }
     break;
-      // gestion des combo-box
-    case ig::EGET_COMBO_BOX_CHANGED:
-    {
-      s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_COMBO_BOX)
-      {
-        ig::IGUIComboBox *cbox = (ig::IGUIComboBox*)event.GUIEvent.Caller;
-        s32 item = cbox->getSelected();
-        u32 elem_id = cbox->getItemData(item);
-        std::cout << "Combo box changed: item " << item << ", id " << elem_id << std::endl;
-      }
-    }
-    break;
-      // Gestion des listes
-    case ig::EGET_LISTBOX_CHANGED:
-    {
-      s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_LIST_BOX)
-      {
-        ig::IGUIListBox *lbox = (ig::IGUIListBox*)event.GUIEvent.Caller;
-        s32 item = lbox->getSelected();
-        std::cout << "List box changed: item " << item << std::endl;
-      }
-    }
-    break;
-      // Gestion des barres de défilement
-    case ig::EGET_SCROLL_BAR_CHANGED:
-    {
-      s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_SCROLLBAR)
-      {
-        ig::IGUIScrollBar *scroll = (ig::IGUIScrollBar*)event.GUIEvent.Caller;
-        s32 value = scroll->getPos();
-        std::cout << "Scrollbar moved: " << value << std::endl;
-      }
-    }
-    break;
-      // Gestion des spinbox
-    case ig::EGET_SPINBOX_CHANGED:
-    {
-      s32 id = event.GUIEvent.Caller->getID();
-      if (id == WINDOW_SPIN_BOX)
-      {
-        ig::IGUISpinBox *spin = (ig::IGUISpinBox*)event.GUIEvent.Caller;
-        f32 value = spin->getValue();
-        std::cout << "Spin Box changed: " << value << std::endl;
-      }
-    }
-    break;
+    
     default:;
   }
   return false;
@@ -267,10 +196,3 @@ void EventReceiver::set_gui(irr::gui::IGUIEnvironment *g)
   gui = g;
 }
 
-/**************************************************************************\
- * EventReceiver::set_game_on                                                 *
-\**************************************************************************/
-bool EventReceiver::set_game_on(bool i)
-{
-  return !i;
-}
