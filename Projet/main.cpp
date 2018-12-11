@@ -1,6 +1,7 @@
 #include <irrlicht.h>
 #include "events.h"
 #include "gui_ids.h"
+#include "adds.h"
 
 using namespace irr;
 
@@ -66,13 +67,14 @@ int main()
   is::IMeshSceneNode *scene;
   scene=smgr->addOctreeSceneNode(scenemesh->getMesh(0),nullptr,-1,1024);
 // Translation pour que nos personnages soient dans le dé cor
-  scene->setPosition ( core :: vector3df ( 0 , -40 , 0));
+  scene->setPosition ( core :: vector3df ( 0 , -50 , 0));
 
 
 
 
    // Chargement de notre personnage
   is::IAnimatedMesh *mesh = smgr->getMesh("data/tris.md2");
+  is::IAnimatedMesh *mesh2 = smgr->getMesh("data/GoldTrunk/GoldTrunk.obj");
  // Attachement de notre personnage dans la scène
   is::IAnimatedMeshSceneNode *node = smgr->addAnimatedMeshSceneNode(mesh);
   node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -81,11 +83,15 @@ int main()
   textures.push_back(driver->getTexture("data/red_texture.pcx"));
   textures.push_back(driver->getTexture("data/blue_texture.pcx"));
   node->setMaterialTexture(0, textures[0]);
+
+  Adds add;
+  add.popAdds(driver,smgr,mesh2);
+
   receiver.set_gui(gui);
   receiver.set_node(node);
   receiver.set_textures(textures);
 
-  scene::ICameraSceneNode *camera = smgr->addCameraSceneNodeFPS();
+  scene::ICameraSceneNode *camera = smgr->addCameraSceneNode(node, core::vector3df(-50.0,40.0,0.0),core::vector3df(0.0,0.0,0.0));
 
   // Création du triangle selector
   scene::ITriangleSelector *selector;
@@ -94,11 +100,10 @@ int main()
   scene::ISceneNodeAnimator *anim;
   anim = smgr->createCollisionResponseAnimator(selector, 
                                                node,  // Le noeud que l'on veut gérer
-                                               ic::vector3df(5, 5, 5), // "rayons" de la caméra
+                                               ic::vector3df(10, 20, 10), // "rayons" de la caméra
                                                ic::vector3df(0, -10, 0),  // gravité
                                                ic::vector3df(0, 30, 0));  // décalage du centre
   //camera->addAnimator(anim);
-  node->addAnimator(anim);
   node->addAnimator(anim);
 
 // Création du Gui
@@ -117,8 +122,9 @@ int main()
 
   while(device->run())
   {
+    camera->setTarget(node->getPosition()+core::vector3df(0.0,30.0,0.0));
     driver->beginScene(true, true, iv::SColor(100,150,200,255));
-gui->drawAll();
+    gui->drawAll();
 
 
     // Dessin de la scène :
