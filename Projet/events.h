@@ -26,12 +26,13 @@ class EventReceiver : public irr::IEventReceiver
 public:
   
   EventReceiver();
+  bool game_on;
   bool OnEvent(const irr::SEvent &event);
   void set_gui(irr::gui::IGUIEnvironment *gui);
   void set_node(irr::scene::IAnimatedMeshSceneNode *node);
   void set_textures(const std::vector<irr::video::ITexture *> &tex){textures=tex;}
   bool getMouvement();
-  enum type {running,forward,stand,backward,right,left,end_of_array};
+  enum type {running,forward,stand,backward,right,left,jump,end_of_array};
   bool states[end_of_array];
   void gestion_deplacement(bool states[], is::IAnimatedMeshSceneNode *node);
 
