@@ -53,7 +53,7 @@ namespace ig = irr::gui;
         states[left] = event.KeyInput.PressedDown;
         break;
       case KEY_SPACE: // Saut
-        std::cout<<"position x= "<<node->getPosition().X<<"position z =" <<node->getPosition().Y<<std::endl;
+        std::cout<<"core::vector3df("<<node->getPosition().X<<"," <<node->getPosition().Y<<"," <<node->getPosition().Z<<"),"<<std::endl;
         break;
       
 
@@ -131,6 +131,11 @@ namespace ig = irr::gui;
     current_texture = (current_texture + 1) % textures.size();
     node->setMaterialTexture(0, textures[current_texture]);
     break;
+
+    case EMIE_RMOUSE_PRESSED_DOWN:
+    std::cout<<"core::vector3df("<<node->getPosition().X<<"," <<node->getPosition().Y-34.0f<<"," <<node->getPosition().Z<<"),"<<std::endl;
+    break;
+    
     default:
     ;
   }
@@ -315,9 +320,9 @@ bool EventReceiver::getMouvement()
   return &states;
 }
 void EventReceiver::gestion_deplacement(bool states[], is::IAnimatedMeshSceneNode *node){
-  ic::vector3df position = node->getPosition();
+    ic::vector3df position = node->getPosition();
     ic::vector3df rotation = node->getRotation();
-    int speed=3;
+    int speed=10;
     
     
 
