@@ -19,7 +19,6 @@ void Adds::popAdds(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::IAnima
 
 {
 
-	//srand(time(0));
 
   float const scale = 1.0f;
 
@@ -34,20 +33,25 @@ void Adds::popAdds(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::IAnima
   node->setPosition(core::vector3df(X, 0.0, Z));
   node->setScale(core::vector3df(scale, scale, scale));
   //node->drop();
-	
-	scene::ITriangleSelector *selector;
-   selector = smgr->createOctreeTriangleSelector(scene->getMesh(), scene);
+
+  scene::ITriangleSelector *selector;
+  selector = smgr->createOctreeTriangleSelector(scene->getMesh(), scene);
   scene->setTriangleSelector(selector);
 
-      const core::aabbox3d<f32>& box = node->getBoundingBox();
-        core::vector3df radius = box.MaxEdge- box.getCenter();
-        radius.Y=radius.Y/2.0;
+  const core::aabbox3d<f32>& box = node->getBoundingBox();
+  core::vector3df radius = box.MaxEdge- box.getCenter();
+  radius.Y=radius.Y/2.0;
 
 
 
- is::ISceneNodeAnimatorCollisionResponse *collision = smgr->createCollisionResponseAnimator(selector, node, radius,ic::vector3df(0, -0.5, 0));
+
+
+
+  is::ISceneNodeAnimatorCollisionResponse *collision = smgr->createCollisionResponseAnimator(selector, node, radius,ic::vector3df(0, -0.5, 0));
   node->addAnimator(collision);
 
+  const core::aabbox3d<f32>& scenebox = scene->getTransformedBoundingBox();
+  core::vector3df sceneradius = scenebox.MaxEdge- scenebox.getCenter();
 
   
 }
@@ -59,7 +63,6 @@ int Adds::collision(is::IAnimatedMeshSceneNode *perso, is::IAnimatedMeshSceneNod
 }
 void Adds::deleteAdds()
 {
-  		node->remove();
-      exist=false;
+  node->remove();
+  exist=false;
 }
-

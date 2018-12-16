@@ -29,70 +29,36 @@ game_on(false)
 bool EventReceiver::keyboard_handler(const SEvent &event)
 {
 
-  if (event.KeyInput.PressedDown)
+  if (event.EventType == EET_KEY_INPUT_EVENT)
   {
-    //ic::vector3df position = node->getPosition();
-   // ic::vector3df rotation = node->getRotation();
-   // int speed=5;
+    states[right]=false;
+    states[left]=false;
     switch (event.KeyInput.Key)
     {
       case KEY_ESCAPE:
       exit(0);
       case KEY_KEY_Z: // Avance
-   //   position.X += speed * cos(rotation.Y * M_PI / 180.0);
-   //   position.Z += -speed * sin(rotation.Y * M_PI / 180.0);
-      states[forward]=true;
+      states[forward]=event.KeyInput.PressedDown;
       states[stand]=false;
-      states[jump]=false;
-
-
       break;
       case KEY_KEY_S: // Recule
-      states[backward]=true;
+      states[backward]=event.KeyInput.PressedDown;;
       states[stand]=false;
-      states[jump]=false;
-
-    //  position.X += -speed * cos(rotation.Y * M_PI / 180.0);
-    //  position.Z += speed * sin(rotation.Y * M_PI / 180.0);
-        //states[=true;
-
       break;
       case KEY_KEY_D: // Tourne à droite
-      states[right]=true;
+      states[right]=event.KeyInput.PressedDown;;
       states[stand]=false;
-      states[jump]=false;
-
-   //   rotation.Y += 10;
       break;
       case KEY_KEY_Q: // Tourne à gauche
-      states[left]=true;
+      states[left]=event.KeyInput.PressedDown;;
       states[stand]=false;
-      states[jump]=false;
-
-    //  rotation.Y -= 10;
       break;
-
-    case KEY_SPACE:
-          // speed_jump -= 35*9.8*0.01;
-          // position.Y += speed_jump*3;
-        //  states[jump]=true;
-          // states[forward]=false;
-          // states[stand]=false;
-    break;
-    default:;
+      default:;
+    }
   }
-  //  node->setPosition(position);
-   // node->setRotation(rotation);
-  }
-  else
+  if(!event.KeyInput.PressedDown)
   {
     states[stand]=true;
-    states[forward]=false;
-    states[backward]=false;
-    states[right]=false;
-    states[left]=false;
-    states[jump]=false;
-
   }
 
 
@@ -126,12 +92,6 @@ bool EventReceiver::keyboard_handler(const SEvent &event)
     states[stand]=false;
   }
 
-}
-if(states[jump]==true)
-{
-
-  node->setMD2Animation(irr::scene::EMAT_JUMP);
-        // states[jump]=false;
 }
 
 
@@ -177,71 +137,103 @@ bool EventReceiver::mouse_handler(const SEvent &event)
 /*------------------------------------------------------------------------*\
  * EventReceiver::gui_handler                                             *
 \*------------------------------------------------------------------------*/
-  bool EventReceiver::gui_handler(const SEvent &event)
+bool EventReceiver::gui_handler(const SEvent &event)
+{
+  if (!node) return false;
+  switch(event.GUIEvent.EventType)
   {
-    if (!node) return false;
-    switch(event.GUIEvent.EventType)
-    {
     // Gestion des menus de la barre de menu
-      case ig::EGET_MENU_ITEM_SELECTED:
+    case ig::EGET_MENU_ITEM_SELECTED:
+    {
+      ig::IGUIContextMenu *menu = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
+      s32 item = menu->getSelectedItem();
+      s32 id = menu->getItemCommandId(item);
+      u32 debug_info = node->isDebugDataVisible();
+
+      switch(id)
       {
-        ig::IGUIContextMenu *menu = (ig::IGUIContextMenu*)event.GUIEvent.Caller;
-        s32 item = menu->getSelectedItem();
-        s32 id = menu->getItemCommandId(item);
-        u32 debug_info = node->isDebugDataVisible();
+        case MENU_NEW_GAME:
+        game_on=true;
+        break;
 
-        switch(id)
-        {
-          case MENU_NEW_GAME:
-          game_on=true;
-          break;
+        case MENU_QUIT:
+        exit(0);
 
-          case MENU_QUIT:
-          exit(0);
+        case MENU_BOUNDING_BOX:
+        menu->setItemChecked(item, !menu->isItemChecked(item));
+        node->setDebugDataVisible(debug_info ^ is::EDS_BBOX);
+        break;
 
-          case MENU_BOUNDING_BOX:
-          menu->setItemChecked(item, !menu->isItemChecked(item));
-          node->setDebugDataVisible(debug_info ^ is::EDS_BBOX);
-          break;
+        case MENU_NORMALS:
+        menu->setItemChecked(item, !menu->isItemChecked(item));
+        node->setDebugDataVisible(debug_info ^ is::EDS_NORMALS);
+        break;
 
-          case MENU_NORMALS:
-          menu->setItemChecked(item, !menu->isItemChecked(item));
-          node->setDebugDataVisible(debug_info ^ is::EDS_NORMALS);
-          break;
+        case MENU_TRIANGLES:
+        menu->setItemChecked(item, !menu->isItemChecked(item));
+        node->setDebugDataVisible(debug_info ^ is::EDS_MESH_WIRE_OVERLAY);
+        break;
 
-          case MENU_TRIANGLES:
-          menu->setItemChecked(item, !menu->isItemChecked(item));
-          node->setDebugDataVisible(debug_info ^ is::EDS_MESH_WIRE_OVERLAY);
-          break;
+        case MENU_TRANSPARENCY:
+        menu->setItemChecked(item, !menu->isItemChecked(item));
+        node->setDebugDataVisible(debug_info ^ is::EDS_HALF_TRANSPARENCY);
+        break;
 
-          case MENU_TRANSPARENCY:
-          menu->setItemChecked(item, !menu->isItemChecked(item));
-          node->setDebugDataVisible(debug_info ^ is::EDS_HALF_TRANSPARENCY);
-          break;
-
-          case MENU_ABOUT:
-          break;
-        }
+        case MENU_ABOUT:
+        break;
       }
-      break;
-      // gestion des boutons
-      case ig::EGET_BUTTON_CLICKED:
-      {
-        s32 id = event.GUIEvent.Caller->getID();
-        if (id == MENU_NEW_GAME)
-        {
-          std::cout << "Button clicked\n";
-          game_on=true;
-          event.GUIEvent.Caller->getParent()->remove();
-
-        }
-      }
-      break;
-
-      default:;
     }
-    return false;
+    break;
+      // gestion des boutons
+    case ig::EGET_BUTTON_CLICKED:
+    {
+      s32 id = event.GUIEvent.Caller->getID();
+      if (id == MENU_NEW_GAME)
+      {
+        std::cout << "Button Start clicked\n";
+        game_on=true;
+        event.GUIEvent.Caller->getParent()->remove();
+
+      }
+    }
+    break;
+    // gestion des combo box
+    case ig::EGET_COMBO_BOX_CHANGED :
+    {
+      s32 id = event.GUIEvent.Caller->getID();
+      if (id == MENU_DIFFICULTY)
+      {
+        ig::IGUIComboBox * cbox = (ig::IGUIComboBox*)event.GUIEvent.Caller;
+        s32 item = cbox->getSelected();
+        u32 elem_id = cbox->getItemData(item);
+        if(elem_id == DIFFICULTY_EASY)
+        {
+          diff[easy] = true;
+          diff[normal] = false;
+          diff[hard] = false;
+          std::cout << "EASY\n";
+        }
+        else if (elem_id == DIFFICULTY_NORMAL)
+        {
+          diff[easy] = false;
+          diff[normal] = true;
+          diff[hard] = false;
+          std::cout << "NORMAL\n";
+        }
+        else if (elem_id == DIFFICULTY_HARD)
+        {
+          diff[easy] = false;
+          diff[normal] = false;
+          diff[hard] = true;
+          std::cout << "HARD\n";
+        }
+      }
+    }
+
+    default:;
   }
+  return false;
+}
 
 /**************************************************************************\
  * EventReceiver::OnEvent                                                 *
@@ -279,10 +271,25 @@ void EventReceiver::set_gui(irr::gui::IGUIEnvironment *g)
   gui = g;
 }
 
+/**************************************************************************\
+ * EventReceiver::getMouvement                                             *
+\**************************************************************************/
 bool EventReceiver::getMouvement()
 {
   return &states;
 }
+
+/**************************************************************************\
+ * EventReceiver::getDifficulty                                            *
+\**************************************************************************/
+bool EventReceiver::getDifficulty()
+{
+  return &diff;
+}
+
+/**************************************************************************\
+ * EventReceiver::gestion_deplacement                                      *
+\**************************************************************************/
 void EventReceiver::gestion_deplacement(bool states[], is::IAnimatedMeshSceneNode *node){
   ic::vector3df position = node->getPosition();
   ic::vector3df rotation = node->getRotation();
@@ -312,9 +319,6 @@ void EventReceiver::gestion_deplacement(bool states[], is::IAnimatedMeshSceneNod
 if(states[left]) // Tourne à gauche
 {
   rotation.Y -= 10;
-}
-if (states[jump]){
-
 }
 
 

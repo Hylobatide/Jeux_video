@@ -45,11 +45,18 @@ static void create_window(ig::IGUIEnvironment *gui)
   // La fenêtre
   ig::IGUIWindow *window = gui->addWindow(ic::rect<s32>(420,25, 620,460), false, L"First Menu");
   gui->addButton(ic::rect<s32>(40,74, 140,92), window, MENU_NEW_GAME, L"Start!");
+  gui->addStaticText(L"Difficulty:", ic::rect<s32>(40,100, 140,118), false, false, window);
+  ig::IGUIComboBox *cbox = gui->addComboBox(ic::rect<s32>(40,120, 140,138), window, MENU_DIFFICULTY);
+  cbox->addItem(L"Choix de la difficulté");
+  cbox->addItem(L"Easy",DIFFICULTY_EASY);
+  cbox->addItem(L"Normal",DIFFICULTY_NORMAL);
+  cbox->addItem(L"Difficult",DIFFICULTY_HARD);
 }
 
 int main()
 {
   int score=0;
+  int timer;
   int nbAdds=100;
 
   EventReceiver receiver;
@@ -89,21 +96,10 @@ int main()
   textures.push_back(driver->getTexture("data/red_texture.pcx"));
   textures.push_back(driver->getTexture("data/blue_texture.pcx"));
   node->setMaterialTexture(0, textures[0]);
-  
-
-  std::vector<Adds> v;
-
-  Adds add;
-
-  for (int i = 0; i < nbAdds; ++i)
-  {
-
-    add.popAdds(driver,smgr,mesh2,scene,i);
-    v.push_back(add);
-  }
 
 
- //add.popAdds(driver,smgr,mesh2,scene,0);
+
+ // add.popAdds(driver,smgr,mesh2,scene,0);
 
 
 
@@ -126,7 +122,7 @@ int main()
   
   node->addAnimator(anim);
 
-  receiver.states[1]=false;//bouge pas
+  
 
   // Création du Gui
 
@@ -162,51 +158,109 @@ int main()
   ig::IGUIImage *score_10    = gui->addImage(ic::rect<s32>(135,15, 175,55)); score_10->setScaleImage(true);
   ig::IGUIImage *score_1     = gui->addImage(ic::rect<s32>(175,15, 215,55)); score_1->setScaleImage(true);
 
+  // Création des places pour les chiffres
+  ig::IGUIImage *timer_10000 = gui->addImage(ic::rect<s32>(15+1050,15,  55+1050,55)); timer_10000->setScaleImage(true);
+  ig::IGUIImage *timer_1000  = gui->addImage(ic::rect<s32>(55+1050,15,  95+1050,55)); timer_1000->setScaleImage(true);
+  ig::IGUIImage *timer_100   = gui->addImage(ic::rect<s32>(95+1050,15,  135+1050,55)); timer_100->setScaleImage(true);
+  ig::IGUIImage *timer_10    = gui->addImage(ic::rect<s32>(135+1050,15, 175+1050,55)); timer_10->setScaleImage(true);
+  ig::IGUIImage *timer_1     = gui->addImage(ic::rect<s32>(175+1050,15, 215+1050,55)); timer_1->setScaleImage(true);
 
-  while(device->run())
+receiver.states[1]=false;//bouge pas
+receiver.states[3]=false;//bouge pas
+receiver.diff[0]=true; //Difficulté mis à facile
+
+
+
+
+std::vector<Adds> v;
+
+Adds add;
+
+for (int i = 0; i < nbAdds; ++i)
+{
+
+  add.popAdds(driver,smgr,mesh2,scene,i);
+  v.push_back(add);
+}
+
+while(device->run())
+{
+
+
+  camera->setTarget(node->getPosition()+core::vector3df(0.0,30.0,0.0));
+
+  driver->beginScene(true, true, iv::SColor(100,150,200,255));
+  gui->drawAll();
+
+// Gestion de la difficulté
+  if(receiver.diff[0] == true && receiver.game_on == false)
   {
+    timer=1000;
+  }
+  else if (receiver.diff[1] == true && receiver.game_on == false)
+  {
+    timer = 800;
+  }
+  else if (receiver.diff[2] == true && receiver.game_on == false)
+  {
+    timer = 600;
+  }
+  // smgr_intro->drawAll(); 
+   // std::cout<<"collision = "<<collision<<std::endl;
 
-
-    camera->setTarget(node->getPosition()+core::vector3df(0.0,30.0,0.0));
-
-    driver->beginScene(true, true, iv::SColor(100,150,200,255));
-    gui->drawAll();
-   //std::cout<<"collision = "<<collision<<std::endl;
-
-    if(receiver.game_on){
+  if(receiver.game_on){
     // Dessin de la scène :
-      smgr->drawAll();
+    smgr->drawAll();
+    gui->drawAll();
 
-      for (int i = 0; i < int(v.size()); ++i)
+    timer--;
+    
+    
+    for (int i = 0; i < int(v.size()); ++i)
+    {
+
+      if(v[i].exist)
       {
-        if(v[i].exist)
+
+        if(v[i].collision(node,v[i].node)==1)
         {
-
-          if(v[i].collision(node,v[i].node)==1)
-          {
-            v[i].deleteAdds();
-            score++;
-          }
-
+          v[i].deleteAdds();
+          score++;
         }
+
       }
-      if (score == 50000) score = -1;
-      // Mise à jour du score :
-      score_10000->setImage(digits[(score / 10000) % 10]);
-      score_1000->setImage(digits[(score / 1000) % 10]);
-      score_100->setImage(digits[(score / 100) % 10]);
-      score_10->setImage(digits[(score / 10) % 10]);
-      score_1->setImage(digits[(score / 1) % 10]);
-      gui->drawAll();
     }
+    if (score == 50000) score = -1;
+      // Mise à jour du score :
+    score_10000->setImage(digits[(score / 10000) % 10]);
+    score_1000->setImage(digits[(score / 1000) % 10]);
+    score_100->setImage(digits[(score / 100) % 10]);
+    score_10->setImage(digits[(score / 10) % 10]);
+    score_1->setImage(digits[(score / 1) % 10]);
+
+    if(timer==0) 
+    {
+      std::cout<<"Game Over"<<std::endl;
+      std::cout<<"Score : " << score <<std::endl;
+      exit(0);
+    }
+    timer_10000->setImage(digits[(timer / 10000) % 10]);
+    timer_1000->setImage(digits[(timer / 1000) % 10]);
+    timer_100->setImage(digits[(timer / 100) % 10]);
+    timer_10->setImage(digits[(timer / 10) % 10]);
+    timer_1->setImage(digits[(timer / 1) % 10]);
 
     receiver.gestion_deplacement(receiver.states, node);
+    
+  }
+
+
 //std::cout<<"SCORE = "<<score<<std::endl;
 
-    driver->endScene();
+  driver->endScene();
 
-  }
-  device->drop();
+}
+device->drop();
 
-  return 0;
+return 0;
 }

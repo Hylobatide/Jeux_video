@@ -16,7 +16,7 @@ public:
   Adds();
 
   
-  bool exist;
+  bool exist=true;
 
   is::IAnimatedMeshSceneNode *node;
   void popAdds(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::IAnimatedMesh *mesh,is::IMeshSceneNode *scene, int nbAdd);
