@@ -22,15 +22,14 @@ void Adds::popAdds(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::IAnima
 
   float const scale = 1.0f;
 
-  float  X = rand()%1000;
-
-  float  Z = rand()%1000;
   nb=nbAdd;
-
+ float X= positions_coffres[nbAdd].X;
+  float Y=positions_coffres[nbAdd].Y;
+  float Z = positions_coffres[nbAdd].Z;
 
   node = smgr->addAnimatedMeshSceneNode(mesh);
   node->setMaterialFlag(iv::EMF_LIGHTING, false);
-  node->setPosition(core::vector3df(X, 0.0, Z));
+  node->setPosition(core::vector3df(X, Y, Z));
   node->setScale(core::vector3df(scale, scale, scale));
   //node->drop();
 

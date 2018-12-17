@@ -46,9 +46,10 @@ void Ennemy::popEnnemies(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::
 
 	const core::aabbox3d<f32>& box = node->getBoundingBox();
 	core::vector3df radius = box.MaxEdge- box.getCenter();
-	radius.Y=radius.Y/2.0;
+	//radius.Y=radius.Y/2.0;
 
-
+  radius.X-=10.0f;
+  radius.Z-=10.0f;
 
 
 	is::ISceneNodeAnimatorCollisionResponse *collision = smgr->createCollisionResponseAnimator(selector, node, radius,ic::vector3df(0, -10, 0));
@@ -71,34 +72,36 @@ void Ennemy::deleteEnnemy()
 }
 
 
-void Ennemy::deplacementEnnemies()
+void Ennemy::deplacementEnnemies(float speed)
 {
-	    ic::vector3df position = node->getPosition();
-    	ic::vector3df rotation = node->getRotation();
-    	int i =0;
-    	
-    while(i<10000)
-    {
-    	lastX=position.X;
-    	lastZ=position.Z;
-    	position.X += speed * cos(rotation.Y * M_PI / 180.0);
-      	position.Z += -speed * sin(rotation.Y * M_PI / 180.0);
+ ic::vector3df position = node->getPosition();
+ ic::vector3df rotation = node->getRotation();
 
-      	// if(int(lastX)==int(position.X) && int(lastZ)==int(position.Z))
-      	// {
-      	// 	rotation.Y+=180;
-      	// }
-      		if(i>5000)
-      	{
-      		rotation.Y=180;
-      	}
-      	node->setPosition(position);
-    	node->setRotation(rotation);
-      	i++;
-    }
-    	
 
-    	
+
+
+ position.X += speed * cos(rotation.Y * M_PI / 180.0);
+ position.Z += -speed * sin(rotation.Y * M_PI / 180.0);
+
+
+ if(abs(int(lastX)-int(position.X))==0 && abs(int(lastZ)-int(position.Z))==0)
+ {
+  rotation.Y+=180;
+}
+
+
+
+
+
+node->setPosition(position);
+node->setRotation(rotation);
+lastX=position.X;
+lastZ=position.Z;
+
+
+
+
+
 
 
 

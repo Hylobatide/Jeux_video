@@ -293,7 +293,7 @@ bool EventReceiver::getDifficulty()
 void EventReceiver::gestion_deplacement(bool states[], is::IAnimatedMeshSceneNode *node){
   ic::vector3df position = node->getPosition();
   ic::vector3df rotation = node->getRotation();
-  int speed=3;
+  int speed=5;
 
 
 
@@ -309,16 +309,16 @@ void EventReceiver::gestion_deplacement(bool states[], is::IAnimatedMeshSceneNod
         position.X += -speed * cos(rotation.Y * M_PI / 180.0);
         position.Z += speed * sin(rotation.Y * M_PI / 180.0);
       }
-        //states[=true;
+        
 
   if(states[right]) // Tourne à droite
-    {rotation.Y += 10;
+    {rotation.Y += 4;
     }
 
 
 if(states[left]) // Tourne à gauche
 {
-  rotation.Y -= 10;
+  rotation.Y -= 4;
 }
 
 

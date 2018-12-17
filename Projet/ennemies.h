@@ -13,8 +13,8 @@ class Ennemy
 {
   int id;
  
-float lastX;
-float lastZ;
+float lastX=0.0f;
+float lastZ=0.0f;
 
 
 core::vector3df positions_ennemies[9]={core::vector3df(-661,-59.99,-103),
@@ -33,12 +33,12 @@ public:
 Ennemy();
 
   bool exist=true;
-  float speed=0.0001;
+  bool touche=false;
   is::IAnimatedMeshSceneNode *node;
   void popEnnemies(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::IAnimatedMesh *mesh,is::IMeshSceneNode *scene, int nbennemy);
   void deleteEnnemy();
   int collision(is::IAnimatedMeshSceneNode *perso, is::IAnimatedMeshSceneNode *node);
-  void deplacementEnnemies();
+  void deplacementEnnemies(float speed);
 
 };
 

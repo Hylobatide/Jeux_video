@@ -4,6 +4,7 @@
 #include <iostream>
 #include "adds.h"
 #include <vector>
+#include  "ennemies.h"
 
 using namespace irr;
 using namespace std;
@@ -57,8 +58,10 @@ int main()
 {
   int score=0;
   int timer;
-  int nbAdds=100;
-
+  int nbAdds=52;
+  int nbennemy=9;
+  float speed = 2;
+  
   EventReceiver receiver;
   std::vector<iv::ITexture*> textures;
 
@@ -87,7 +90,7 @@ int main()
    // Chargement de notre personnage
   is::IAnimatedMesh *mesh = smgr->getMesh("data/tris.md2");
   is::IAnimatedMesh *mesh2 = smgr->getMesh("data/GoldTrunk/GoldTrunk.obj");
-
+  is::IAnimatedMesh *ennemy = smgr->getMesh("data/ennemies/Kopaka.obj");
  // Attachement de notre personnage dans la scène
   is::IAnimatedMeshSceneNode *node = smgr->addAnimatedMeshSceneNode(mesh);
   node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -96,7 +99,7 @@ int main()
   textures.push_back(driver->getTexture("data/red_texture.pcx"));
   textures.push_back(driver->getTexture("data/blue_texture.pcx"));
   node->setMaterialTexture(0, textures[0]);
-
+  node->setPosition(core::vector3df(-731,0,-103));
 
 
  // add.popAdds(driver,smgr,mesh2,scene,0);
@@ -116,8 +119,8 @@ int main()
   scene::ISceneNodeAnimator *anim;
   anim = smgr->createCollisionResponseAnimator(selector, 
                                                node,  // Le noeud que l'on veut gérer
-                                               ic::vector3df(10, 20, 10), // "rayons" de la caméra
-                                               ic::vector3df(0, -10, 0),  // gravité
+                                               ic::vector3df(25, 20, 25), // "rayons" de la caméra
+                                               ic::vector3df(0, -5, 0),  // gravité
                                                ic::vector3df(0, 30, 0));  // décalage du centre
   
   node->addAnimator(anim);
@@ -167,6 +170,7 @@ int main()
 
 receiver.states[1]=false;//bouge pas
 receiver.states[3]=false;//bouge pas
+receiver.states[0]=false;
 receiver.diff[0]=true; //Difficulté mis à facile
 
 
@@ -183,10 +187,21 @@ for (int i = 0; i < nbAdds; ++i)
   v.push_back(add);
 }
 
+std::vector<Ennemy> w;
+Ennemy ennemies;
+for (int i = 0; i < nbennemy; i++)
+{
+
+  ennemies.popEnnemies(driver,smgr,ennemy,scene,i);
+  w.push_back(ennemies);
+}
+
+
 while(device->run())
 {
 
-
+  ic::vector3df position = node->getPosition();
+  ic::vector3df rotation = node->getRotation();
   camera->setTarget(node->getPosition()+core::vector3df(0.0,30.0,0.0));
 
   driver->beginScene(true, true, iv::SColor(100,150,200,255));
@@ -195,18 +210,18 @@ while(device->run())
 // Gestion de la difficulté
   if(receiver.diff[0] == true && receiver.game_on == false)
   {
-    timer=1000;
+    timer=3000;
   }
   else if (receiver.diff[1] == true && receiver.game_on == false)
   {
-    timer = 800;
+    timer = 2500;
+    speed=4;
   }
   else if (receiver.diff[2] == true && receiver.game_on == false)
   {
-    timer = 600;
+    timer = 2000;
+    speed=6;
   }
-  // smgr_intro->drawAll(); 
-   // std::cout<<"collision = "<<collision<<std::endl;
 
   if(receiver.game_on){
     // Dessin de la scène :
@@ -229,6 +244,30 @@ while(device->run())
         }
 
       }
+    }
+
+    for (int j = 0; j < nbennemy; j++)
+    {
+      w[j].deplacementEnnemies(speed);
+      if(w[j].collision(node, w[j].node)==1)
+      {
+        position.X += -5 * cos(rotation.Y * M_PI / 180.0);
+        position.Z += 5 * sin(rotation.Y * M_PI / 180.0);
+        node->setPosition(position);
+        node->setRotation(rotation);
+        if(w[j].touche==false)
+        {
+          if(score>0)
+          {
+            score--;
+          }
+          w[j].touche=true;
+        }
+
+        
+
+      }
+      w[j].touche=false;
     }
     if (score == 50000) score = -1;
       // Mise à jour du score :
@@ -255,7 +294,7 @@ while(device->run())
   }
 
 
-//std::cout<<"SCORE = "<<score<<std::endl;
+
 
   driver->endScene();
 
