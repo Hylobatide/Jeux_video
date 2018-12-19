@@ -7,6 +7,8 @@
 
 #include <irrlicht.h>
 namespace is = irr::scene;
+namespace ig = irr::gui;
+
 class EventReceiver : public irr::IEventReceiver
 {
 
@@ -24,7 +26,7 @@ class EventReceiver : public irr::IEventReceiver
   bool mouse_handler(const irr::SEvent &event);
   bool gui_handler(const irr::SEvent &event);
 public:
-
+  
   EventReceiver();
   bool game_on;
   enum difficulty {easy, normal, hard, end};

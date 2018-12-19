@@ -5,7 +5,7 @@
 #include "adds.h"
 #include <vector>
 #include  "ennemies.h"
-
+#include "vector2d.h"
 using namespace irr;
 using namespace std;
 namespace ic = irr::core;
@@ -64,6 +64,7 @@ int main()
   
   EventReceiver receiver;
   std::vector<iv::ITexture*> textures;
+  
 
   // Création de la fenêtre et du système de rendu.
   IrrlichtDevice *device = createDevice(iv::EDT_OPENGL,
@@ -84,6 +85,7 @@ int main()
 // Translation pour que nos personnages soient dans le dé cor
   scene->setPosition ( core :: vector3df ( 0 , -50 , 0));
 
+  auto texture_game_over = driver->getTexture("data/game_over.tga");
 
 
 
@@ -127,12 +129,16 @@ int main()
 
   
 
-  // Création du Gui
+
 
 //Choix de la police de caractères
   ig::IGUISkin* skin = gui->getSkin();
   ig::IGUIFont* font = gui->getFont("data/fontlucida.png");
   skin->setFont(font);
+
+
+
+
 
 
 
@@ -197,6 +203,7 @@ for (int i = 0; i < nbennemy; i++)
 }
 
 
+
 while(device->run())
 {
 
@@ -206,11 +213,10 @@ while(device->run())
 
   driver->beginScene(true, true, iv::SColor(100,150,200,255));
   gui->drawAll();
-
 // Gestion de la difficulté
   if(receiver.diff[0] == true && receiver.game_on == false)
   {
-    timer=3000;
+    timer=1000;
   }
   else if (receiver.diff[1] == true && receiver.game_on == false)
   {
@@ -225,6 +231,10 @@ while(device->run())
 
   if(receiver.game_on){
     // Dessin de la scène :
+    
+    
+    
+    
     smgr->drawAll();
     gui->drawAll();
 
@@ -281,7 +291,11 @@ while(device->run())
     {
       std::cout<<"Game Over"<<std::endl;
       std::cout<<"Score : " << score <<std::endl;
-      exit(0);
+      receiver.game_on=false;
+      gui->addImage(texture_game_over,irr::core::position2d< s32 >(-300,-100));
+      gui->addStaticText(L"SCORE = :"+score, ic::rect<s32>(40,100, 140,118));
+      gui->drawAll();
+      
     }
     timer_10000->setImage(digits[(timer / 10000) % 10]);
     timer_1000->setImage(digits[(timer / 1000) % 10]);
@@ -297,8 +311,8 @@ while(device->run())
 
 
   driver->endScene();
-
 }
+
 device->drop();
 
 return 0;

@@ -21,6 +21,7 @@ EventReceiver::EventReceiver()
 : gui(nullptr), node(nullptr), button_pressed(false), current_texture(0),
 game_on(false)
 {
+
 }
 
 /*------------------------------------------------------------------------*\
@@ -154,6 +155,7 @@ bool EventReceiver::gui_handler(const SEvent &event)
       {
         case MENU_NEW_GAME:
         game_on=true;
+        
         break;
 
         case MENU_QUIT:
