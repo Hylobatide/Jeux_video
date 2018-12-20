@@ -117,7 +117,7 @@ int main()
   anim = smgr->createCollisionResponseAnimator(selector, 
                                                node,  // Le noeud que l'on veut gérer
                                                ic::vector3df(25, 20, 25), // "rayons" de la caméra
-                                               ic::vector3df(0, -5, 0),  // gravité
+                                               ic::vector3df(0, -6, 0),  // gravité
                                                ic::vector3df(0, 30, 0));  // décalage du centre
   
   node->addAnimator(anim);
@@ -278,7 +278,7 @@ while(device->run())
     score_10->setImage(digits[(score / 10) % 10]);
     score_1->setImage(digits[(score / 1) % 10]);
 
-    if(timer==0) 
+    if(timer==0 || node->getPosition().Y<-2000) 
     {
       receiver.game_on=false;
       gui->addImage(texture_game_over,irr::core::position2d< s32 >(-300,-100));
