@@ -21,7 +21,6 @@ static void create_menu(ig::IGUIEnvironment *gui)
   ig::IGUIContextMenu *menu = gui ->addMenu();
   menu->addItem(L"File", -1 , true, true);
   menu->addItem(L"Debug", -1 , true, true);
-  // menu->addItem(L"Help", -1 , true, true);
 
   // Le contenu de menu File
   submenu = menu->getSubMenu(0);
@@ -36,18 +35,17 @@ static void create_menu(ig::IGUIEnvironment *gui)
   submenu->addItem(L"Show Triangles", MENU_TRIANGLES);
   submenu->addItem(L"Transparency",   MENU_TRANSPARENCY);
 
-  // Le contenu du menu Help :
-  // submenu = menu->getSubMenu(2);
-  // submenu->addItem(L"About...", MENU_ABOUT);
+
 }
 
 static void create_window(ig::IGUIEnvironment *gui)
 {
   // La fenêtre
-  ig::IGUIWindow *window = gui->addWindow(ic::rect<s32>(420,25, 620,460), false, L"First Menu");
-  gui->addButton(ic::rect<s32>(40,74, 140,92), window, MENU_NEW_GAME, L"Start!");
-  gui->addStaticText(L"Difficulty:", ic::rect<s32>(40,100, 140,118), false, false, window);
-  ig::IGUIComboBox *cbox = gui->addComboBox(ic::rect<s32>(40,120, 140,138), window, MENU_DIFFICULTY);
+
+  ig::IGUIWindow *window = gui->addWindow(ic::rect<s32>(520,325, 720,550), false, L"Bienvenue dans cet incroyable jeu");
+  gui->addButton(ic::rect<s32>(40,40, 140,92), window, MENU_NEW_GAME, L"Start!");
+  gui->addStaticText(L"Difficulty:", ic::rect<s32>(40,118, 140,130), false, false, window);
+  ig::IGUIComboBox *cbox = gui->addComboBox(ic::rect<s32>(40,140, 140,160), window, MENU_DIFFICULTY);
   cbox->addItem(L"Choix de la difficulté");
   cbox->addItem(L"Easy",DIFFICULTY_EASY);
   cbox->addItem(L"Normal",DIFFICULTY_NORMAL);
@@ -93,7 +91,7 @@ int main()
   is::IAnimatedMesh *mesh = smgr->getMesh("data/tris.md2");
   is::IAnimatedMesh *mesh2 = smgr->getMesh("data/GoldTrunk/GoldTrunk.obj");
   is::IAnimatedMesh *ennemy = smgr->getMesh("data/ennemies/Kopaka.obj");
- // Attachement de notre personnage dans la scène
+ // Attachement de notre personnage dans la scène 
   is::IAnimatedMeshSceneNode *node = smgr->addAnimatedMeshSceneNode(mesh);
   node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
   node->setMD2Animation(irr::scene::EMAT_STAND);
@@ -102,9 +100,6 @@ int main()
   textures.push_back(driver->getTexture("data/blue_texture.pcx"));
   node->setMaterialTexture(0, textures[0]);
   node->setPosition(core::vector3df(-731,0,-103));
-
-
- // add.popAdds(driver,smgr,mesh2,scene,0);
 
 
 
@@ -136,11 +131,10 @@ int main()
   ig::IGUIFont* font = gui->getFont("data/fontlucida.png");
   skin->setFont(font);
 
-
-
-
-
-
+  iv::ITexture *image=driver->getTexture("data/coffre.jpg");
+  ig::IGUIImage *im = gui->addImage(ic::rect<s32>(0,0, 1300 ,850)); 
+  im->setScaleImage(true);
+  im->setImage(image);
 
 // La barre de menu
   create_menu(gui);
@@ -179,9 +173,7 @@ receiver.states[3]=false;//bouge pas
 receiver.states[0]=false;
 receiver.diff[0]=true; //Difficulté mis à facile
 
-
-
-
+//Coffres
 std::vector<Adds> v;
 
 Adds add;
@@ -193,6 +185,7 @@ for (int i = 0; i < nbAdds; ++i)
   v.push_back(add);
 }
 
+//Ennemies
 std::vector<Ennemy> w;
 Ennemy ennemies;
 for (int i = 0; i < nbennemy; i++)
@@ -201,6 +194,7 @@ for (int i = 0; i < nbennemy; i++)
   ennemies.popEnnemies(driver,smgr,ennemy,scene,i);
   w.push_back(ennemies);
 }
+
 
 
 
@@ -216,11 +210,11 @@ while(device->run())
 // Gestion de la difficulté
   if(receiver.diff[0] == true && receiver.game_on == false)
   {
-    timer=1000;
+    timer=4000;
   }
   else if (receiver.diff[1] == true && receiver.game_on == false)
   {
-    timer = 2500;
+    timer = 3000;
     speed=4;
   }
   else if (receiver.diff[2] == true && receiver.game_on == false)
@@ -231,10 +225,7 @@ while(device->run())
 
   if(receiver.game_on){
     // Dessin de la scène :
-    
-    
-    
-    
+    im->setVisible(false);
     smgr->drawAll();
     gui->drawAll();
 
@@ -289,12 +280,20 @@ while(device->run())
 
     if(timer==0) 
     {
-      std::cout<<"Game Over"<<std::endl;
-      std::cout<<"Score : " << score <<std::endl;
       receiver.game_on=false;
       gui->addImage(texture_game_over,irr::core::position2d< s32 >(-300,-100));
-      gui->addStaticText(L"SCORE = :"+score, ic::rect<s32>(40,100, 140,118));
+      ig::IGUIImage *score_10000 = gui->addImage(ic::rect<s32>(15,15,  55,55)); score_10000->setScaleImage(true);
+      ig::IGUIImage *score_1000  = gui->addImage(ic::rect<s32>(55,15,  95,55)); score_1000->setScaleImage(true);
+      ig::IGUIImage *score_100   = gui->addImage(ic::rect<s32>(95,15,  135,55)); score_100->setScaleImage(true);
+      ig::IGUIImage *score_10    = gui->addImage(ic::rect<s32>(135,15, 175,55)); score_10->setScaleImage(true);
+      ig::IGUIImage *score_1     = gui->addImage(ic::rect<s32>(175,15, 215,55)); score_1->setScaleImage(true);
+      score_10000->setImage(digits[(score / 10000) % 10]);
+      score_1000->setImage(digits[(score / 1000) % 10]);
+      score_100->setImage(digits[(score / 100) % 10]);
+      score_10->setImage(digits[(score / 10) % 10]);
+      score_1->setImage(digits[(score / 1) % 10]);
       gui->drawAll();
+
       
     }
     timer_10000->setImage(digits[(timer / 10000) % 10]);

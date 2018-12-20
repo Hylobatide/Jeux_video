@@ -20,12 +20,9 @@ void Ennemy::popEnnemies(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::
 
 {
 
-	//srand(time(0));
 
 	float const scale = 20.0f;
 
-  // float  X = rand()%1000;
-  // float  Z = rand()%1000;
 
 	float X= positions_ennemies[nbennemy].X;
 	float Y=positions_ennemies[nbennemy].Y;
@@ -46,7 +43,6 @@ void Ennemy::popEnnemies(iv::IVideoDriver *driver, is::ISceneManager *smgr, is::
 
 	const core::aabbox3d<f32>& box = node->getBoundingBox();
 	core::vector3df radius = box.MaxEdge- box.getCenter();
-	//radius.Y=radius.Y/2.0;
 
   radius.X-=10.0f;
   radius.Z-=10.0f;

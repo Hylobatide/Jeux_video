@@ -192,7 +192,6 @@ bool EventReceiver::gui_handler(const SEvent &event)
       s32 id = event.GUIEvent.Caller->getID();
       if (id == MENU_NEW_GAME)
       {
-        std::cout << "Button Start clicked\n";
         game_on=true;
         event.GUIEvent.Caller->getParent()->remove();
 
