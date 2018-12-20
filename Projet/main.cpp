@@ -66,7 +66,7 @@ int main()
 
   // Création de la fenêtre et du système de rendu.
   IrrlichtDevice *device = createDevice(iv::EDT_OPENGL,
-    ic::dimension2d<u32>(1280, 960),
+    ic::dimension2d<u32>(1290, 850),
     16, false, false, false, &receiver);
 
   iv::IVideoDriver  *driver = device->getVideoDriver();
